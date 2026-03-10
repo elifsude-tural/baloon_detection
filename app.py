@@ -57,36 +57,20 @@ def draw_detection(frame, x1, y1, x2, y2, label, color, conf):
                 0.7, (255, 255, 255), 2)
 
 
-"""def draw_crosshair(frame):
+crosshair_img = cv2.imread("crosshairfinal.png", cv2.IMREAD_UNCHANGED)  # UNCHANGED şeffaflık için
+
+
+def draw_crosshair(frame, size=200, cx=None, cy=None):
     h, w = frame.shape[:2]
-    cx, cy = w // 2, h // 2
-    color = (0, 255, 0)
-    size, gap, thick = 30, 8, 2
+    if cx is None: cx = w // 2
+    if cy is None: cy = h // 2
 
-    cv2.line(frame, (cx - size, cy), (cx - gap, cy), color, thick)
-    cv2.line(frame, (cx + gap, cy), (cx + size, cy), color, thick)
-    cv2.line(frame, (cx, cy - size), (cx, cy - gap), color, thick)
-    cv2.line(frame, (cx, cy + gap), (cx, cy + size), color, thick)
-    cv2.circle(frame, (cx, cy), 2, color, -1)
-"""
-crosshair_img = cv2.imread("crosshair2.png", cv2.IMREAD_UNCHANGED)  # UNCHANGED şeffaflık için
-
-
-
-def draw_crosshair(frame, size=200):
-    h, w = frame.shape[:2]
-    cx, cy = w // 2, h // 2
-
-    # Nişangahı istediğin boyuta getir
+    # --- Nişangah görseli ---
     ch = cv2.resize(crosshair_img, (size, size))
-
-    # Yapıştırılacak bölge
     x1 = cx - size // 2
     y1 = cy - size // 2
     x2 = x1 + size
     y2 = y1 + size
-
-    # Alpha (şeffaflık) kanalını ayır
     alpha = ch[:, :, 3] / 255.0
     for c in range(3):
         frame[y1:y2, x1:x2, c] = (
@@ -94,8 +78,34 @@ def draw_crosshair(frame, size=200):
             (1 - alpha) * frame[y1:y2, x1:x2, c]
         )
 
+    # --- Uzun çizgiler ---
+    color = (132, 224, 0)
+    thick = 1
+    gap   = size // 2 + 10
+
+    cv2.line(frame, (cx - gap, cy), (0, cy), color, thick)
+    cv2.line(frame, (cx + gap, cy), (w, cy), color, thick)
+    cv2.line(frame, (cx, cy - gap), (cx, 0), color, thick)
+    cv2.line(frame, (cx, cy + gap), (cx, h), color, thick)
+
+    # --- Tick işaretleri ---
+    tick_len   = 8
+    tick_space = 40
+    tick_color = color
+    tick_thick = 1
+
+    for tx in range(cx - gap, 0, -tick_space):
+        cv2.line(frame, (tx, cy - tick_len), (tx, cy + tick_len), tick_color, tick_thick)
+    for tx in range(cx + gap, w, tick_space):
+        cv2.line(frame, (tx, cy - tick_len), (tx, cy + tick_len), tick_color, tick_thick)
+
+    for ty in range(cy - gap, 0, -tick_space):
+        cv2.line(frame, (cx - tick_len, ty), (cx + tick_len, ty), tick_color, tick_thick)
+    for ty in range(cy + gap, h, tick_space):
+        cv2.line(frame, (cx - tick_len, ty), (cx + tick_len, ty), tick_color, tick_thick)
+
+
 def main():
-    #cap = cv2.VideoCapture(0)
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Windows için
     if not cap.isOpened():
         print("Camera didn't Open.")
