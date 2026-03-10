@@ -20,7 +20,8 @@ def get_balloon_color(frame, x1, y1, x2, y2):
     red_mask  = cv2.bitwise_or(red_mask1, red_mask2)
     
     
-    blue_mask = cv2.inRange(hsv, (100, 100, 100), (130, 255, 255))
+    #blue_mask = cv2.inRange(hsv, (100, 100, 100), (130, 255, 255))
+    blue_mask = cv2.inRange(hsv, (85, 60, 80), (135, 255, 255))
     
     red_pixels  = cv2.countNonZero(red_mask)
     blue_pixels = cv2.countNonZero(blue_mask)
